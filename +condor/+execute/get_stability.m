@@ -1,16 +1,18 @@
-function [br, nunst] = get_stability(no_jobs, br, psd_nodes) 
-    if(nargin < 3)
-        psd_nodes = 20;
-    end
-    funfile = 'condor.task.get_stability';
-    parfun = condor.parfuns.br_split(no_jobs, br);
-    function result = reducefun(varargin)
-        tmp_brs = cellfun(@(r) r{1}, varargin);
-        tmp_br = brs_join(tmp_brs{:});
-        tmp_nunst = cell2mat(cellfun(@(r) r{2}, varargin, ...
-                                     'UniformOutput', false));
-        result = [tmp_br, tmp_nunst];
-    end
-    result = condor.execute(no_jobs, funfile, parfun, @reducefun);
+function [br, nunst] = get_stability(br, psd_nodes, varargin)     
+    % condor.task.get_stability takes br, psd_nodes and returns {br, nunst}
+    funfile = 'condor.tasks.get_stability'; 
+    
+    % br_split splits br into no_nodes part, constant returns its argument 
+    % in a cell array (so it will be passed as an argument), and unpack
+    % just returns its argument (so that cell arrays will be unpacked)
+    % combined joins all returned cell arrays of the parfuns
+    parfun = condor.parfuns.combined(condor.parfuns.br_split(br), ...
+                                     condor.parfuns.constant(psd_nodes),...
+                                     condor.parfuns.unpack(varargin));
+                                 
+    % cell_apply applies brs_join to all returned brs and
+    % arrs_join to all returned nunst
+    reducefun = condor.reducefuns.cell_apply(@brs_join, @arrs_join);
+    result = condor.execute(funfile, parfun, reducefun);
     [br, nunst] = result{:};
-end;
+end

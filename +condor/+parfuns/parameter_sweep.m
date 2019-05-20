@@ -1,4 +1,5 @@
-function fun = parameter_sweep(no_jobs, varargin)
+function fun = parameter_sweep(varargin)
+    no_jobs = condor.options('no_nodes');
 	parms = tuples(varargin{:}); % h, a, b, omega,tau);
     split_lengths = diff(floor(size(parms,1)*(0:no_jobs)/no_jobs));
 	parms_split = mat2cell(parms, split_lengths);

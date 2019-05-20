@@ -1,7 +1,8 @@
-function fun = br_split(no_jobs, br)
+function fun = br_split(br)
+    no_jobs = condor.options('no_nodes');
 	brs = br_split(br, no_jobs);
-    function parm = parfun(no_job)
-        parm = {brs{i}};
+    function parm = parfun(job_no)
+        parm = {brs{job_no}};
     end
 	fun = @parfun;
 end

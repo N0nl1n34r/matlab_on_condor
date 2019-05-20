@@ -1,6 +1,6 @@
-function fun = constant(c)
+function fun = unpack(x)
     function parms = parfun(~)
-        parms = {c};
+        parms = x;
     end
     fun = @parfun;
 end

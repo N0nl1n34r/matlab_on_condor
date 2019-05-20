@@ -1,4 +1,4 @@
-function result = execute(no_jobs, funfile, parfun, reducefun)
+function result = execute(funfile, parfun, reducefun)
 % EXECUTE(no_jobs, funfile, parfun, reducefun) executes the function
 % specified by funfile on no_jobs condor nodes, where the arguments given 
 % to the ith node is given by the cell array parfun(i) which is spliced
@@ -65,6 +65,8 @@ function result = execute(no_jobs, funfile, parfun, reducefun)
 % created by: Denis Hessel, d.hessel@wwu.de
 % DATE: 15-May-2019
 %
+    no_jobs = condor.options('no_nodes');
+    
     tarball_dependencies(funfile);
     create_job_parameter_files(parfun, no_jobs);
     submit_on_condor(funfile, no_jobs);
@@ -72,15 +74,43 @@ function result = execute(no_jobs, funfile, parfun, reducefun)
     condor.pause_till_files_exist(condor_expected_files(no_jobs));
     results = get_job_results(no_jobs);
     result = reducefun(results{:});
-    condor_cleanup();
+    condor.cleanup();
 end
 
 function tarball_dependencies(funfile)
-    dep = matlab.codetools.requiredFilesAndProducts(funfile);
+    dep = get_dependencies(funfile);
+    warnings = warning;
+    warning('off', 'MATLAB:tar:archiveName');
     tar(strcat(fileparts(mfilename('fullpath')), '/', ...
                'include_dependencies.tar'), dep);
     gzip(strcat(fileparts(mfilename('fullpath')), '/', ...
                 'include_dependencies.tar'));
+    warning(warnings);
+end
+
+function dep = get_dependencies(funfile)
+    dep = matlab.codetools.requiredFilesAndProducts(funfile);
+    % if funfile specifies function in package, add package
+    % to dependencies
+    funfile_full = which(funfile);
+    if(is_file_in_package(funfile_full))
+        package_name = fileparts(funfile_full);
+        % get top most package name, as function may be in sub package
+        while(is_file_in_package(package_name))
+            package_name = fileparts(package_name);
+        end
+        dep = dep(~startsWith(dep, package_name));
+        dep{end+1} = strcat(package_name);
+    end
+end
+
+function result = is_file_in_package(filepath)
+    result = startsWith(parent_dir_name(filepath), '+');
+end
+
+function dir_name = parent_dir_name(path_name)
+    [parent_path, ~] = fileparts(path_name);
+    [~, dir_name] = fileparts(parent_path);
 end
 
 function create_job_parameter_files(parfun, no_jobs)
@@ -95,7 +125,10 @@ end
 
 function submit_on_condor(funfile, no_jobs)
     mdir = fileparts(mfilename('fullpath'));
-    [~, funname] = fileparts(funfile); 
+    [~, funname, funext] = fileparts(funfile); 
+    if(funext ~= ".m")
+        funname = strcat(funname, funext);
+    end
     [~, ~] = system(['cd ''' mdir  ''' && ' ...
            './matlab_submit_on_condor.py ' num2str(no_jobs) ' ' funname]);
 end
