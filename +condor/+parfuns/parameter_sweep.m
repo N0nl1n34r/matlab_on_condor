@@ -1,21 +1,18 @@
-h = 2;
-a = 10.5:0.5:15;
-b = [0.01 0:0.05:1];
-tau = [0 0.01 0.1 1 1:0.5:5 5:5:100];
-omega = 1;
-
-parms = tuples(h, a, b, omega,tau);
-parms_split = mat2cell(parms, diff(floor(size(parms,1)*(0:no_jobs)/no_jobs)));
-
-for i = 1:no_jobs
-    parameters = parms_split{i};
-    save(strcat('parameter_job_no_', num2str(i), '.mat'), 'parameters')
+function fun = parameter_sweep(no_jobs, varargin)
+	parms = tuples(varargin{:}); % h, a, b, omega,tau);
+    split_lengths = diff(floor(size(parms,1)*(0:no_jobs)/no_jobs));
+	parms_split = mat2cell(parms, split_lengths);
+	function parms = parfun(job_no)
+		parms = {parms_split{job_no}};
+	end
+	fun = @parfun;
 end
 
 % generates a matrix of all possible tuples, where the ith element is from
 % the ith argument
 % this is basically the matlab version of the build-in mathematica version
 % of tuples
+% ... and it is ugly as shit, sorry
 function matrix = tuples(varargin)
     if isempty(varargin) % recursion base case, although not really sensible
         matrix = [];

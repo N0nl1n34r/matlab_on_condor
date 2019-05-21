@@ -24,13 +24,7 @@ import os
 import shutil
 import subprocess
 
-#dont forget the biftool files in your home directory and set the environmental variables in matlab
-#dont use parallelized code. condor wont know how many cores your program will use, thereby slowing down all processes on the client when the number of jobs exceeds the number of cores
-#this is just an example for continuating the allen-cahn equation with p2p
-outputname = "matlab_test"
-
-# task_runner.m reads a job specific parameter file and then 
-# computes the solution to a subproblem specified by the information in the parameter file
+outputname = "condor_execute"
 scriptname = "task_runner.m"
 
 #above matlab script creates a directory in which it saves the solution files 
@@ -40,25 +34,16 @@ directoryname = outputname
 #list of dependencies of the specific example script. This will be different for each problem
 
 #transfer all files, which end with ".m"
-filenames = [f for f in os.listdir(".") if f.endswith('.m')]
+filenames = [scriptname] #[f for f in os.listdir(".") if f.endswith('.m')]
 #tranfer all tarballs, which start with "include"
 filenames += [f for f in os.listdir(".") if f.endswith('.tar.gz') and f.startswith('include')]
 transfer_files= ", ".join(filenames)
 
 #arguments to pass to the executable
-string_arg = "-i " + scriptname + " " + directoryname
+func_name = sys.argv[2]
+string_arg = "-i " + scriptname + " " + directoryname + " " + func_name
 
-no_jobs = 175; # number of jobs you want to create
-# task_create_file is a matlab file which, assuming that the variable no_jobs is set in the matlab workspace,
-# creates no_jobs files named parameter_job_1.mat to parameter_job_($no_jobs).mat
-# each submitted job only has access to one of these parameter files
-# the parameter file should specify which part of the problem should be solved
-task_create_file = "create_tasks_parameter_sweep.m"
-
-# this command runs matlab, sets the no_jobs variable in the matlab workspace to the no_jobs variable in python
-# and then runs the task_create_file
-string_cmd = """matlab -nosplash -nodesktop -noFigureWindows -r "no_jobs={0};run('{1}');exit;" """.format(no_jobs, task_create_file)
-subprocess.call(string_cmd, shell = True) # creates the parameter files
+no_jobs = int(sys.argv[1])#175; # number of jobs you want to create
 
 for i in range(no_jobs): # for each job one condor submit file is generated
     current_outputname = outputname + "_job_no_" + str(i+1) 
@@ -66,7 +51,7 @@ for i in range(no_jobs): # for each job one condor submit file is generated
 
     # transfered files for the ith job are all .m files, tarball starting with "include" (previously defined in transfer_files)
     # and the file parameter_job_no_i+1.mat
-    current_transfer_files = transfer_files + ", parameter_job_no_" + str(i+1) + ".mat"
+    current_transfer_files = transfer_files + ", parameters_job_no_" + str(i+1) + ".mat"
     
     current_string_arg = string_arg + " " + str(i + 1)
     #executable is transferred by default
