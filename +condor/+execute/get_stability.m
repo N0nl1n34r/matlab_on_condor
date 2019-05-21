@@ -12,7 +12,8 @@ function [br, nunst] = get_stability(br, psd_nodes, varargin)
                                  
     % cell_apply applies brs_join to all returned brs and
     % arrs_join to all returned nunst
-    reducefun = condor.reducefuns.cell_apply(@brs_join, @arrs_join);
+    reducefun = condor.reducefuns.cell_apply(@condor.helper.brs_join, ...
+                                             @condor.helper.arrs_join);
     result = condor.execute(funfile, parfun, reducefun);
     [br, nunst] = result{:};
 end
