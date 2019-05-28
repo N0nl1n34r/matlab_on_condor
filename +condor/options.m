@@ -8,7 +8,9 @@ function varargout = options(opt, varargin)
     persistent opts
     
     if(isempty(opts))
-        opts = struct('no_nodes', min([100 floor(condor.free_nodes/3)]));
+        opts = struct('no_nodes', min([100 floor(condor.free_nodes/3)]), ...
+                      'username', 'd_hess06', ...
+                      'debug', false);
     end
     
     switch opt

@@ -66,15 +66,19 @@ function result = execute(funfile, parfun, reducefun)
 % DATE: 15-May-2019
 %
     no_jobs = condor.options('no_nodes');
-    
-    tarball_dependencies(funfile);
-    create_job_parameter_files(parfun, no_jobs);
-    submit_on_condor(funfile, no_jobs);
-    
-    condor.pause_till_files_exist(condor_expected_files(no_jobs));
+    if(~(condor.options('debug') && ...
+         all(isfile(condor_expected_files(no_jobs)))))
+        tarball_dependencies(funfile);
+        create_job_parameter_files(parfun, no_jobs);
+        submit_on_condor(funfile, no_jobs);
+
+        condor.pause_till_files_exist(condor_expected_files(no_jobs));
+    end
     results = get_job_results(no_jobs);
     result = reducefun(results{:});
-    condor.cleanup();
+    if(~condor.options('debug'))
+        condor.cleanup();
+    end
 end
 
 function tarball_dependencies(funfile)
