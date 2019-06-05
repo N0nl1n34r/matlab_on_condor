@@ -134,6 +134,8 @@ function submit_on_condor(funfile, no_jobs)
         funname = strcat(funname, funext);
     end
     [~, ~] = system(['cd ''' mdir  ''' && ' ...
+           'chmod +x matlab_submit_on_condor.py']); 
+    [~, ~] = system(['cd ''' mdir  ''' && ' ...
            './matlab_submit_on_condor.py ' num2str(no_jobs) ' ' funname]);
 end
 
