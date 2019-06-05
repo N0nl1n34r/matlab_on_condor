@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# not tested (yet)!
 # this file is supposed to create multiple condor submit files
 # for embarrassingly parallel problems (https://en.wikipedia.org/wiki/Embarrassingly_parallel)
 # the idea is that
@@ -17,7 +16,8 @@
 #   - split a branch in no_job parts, each job calculates the stability of one of the branch parts
 #     each parameter file contains a branch variable with only the points of which the stability should be computed
 #   - etc.
-
+# Side note: this could have easily been done within matlab, but since matlab
+# is such a nice fucking language it doesn't support multiline strings.
 import numpy as np
 import sys
 import os
@@ -79,4 +79,3 @@ for i in range(no_jobs): # for each job one condor submit file is generated
 
     # use subprocess.call to directly submit the condor job
     subprocess.call("condor_submit "+current_submitfilename, shell=True)
-

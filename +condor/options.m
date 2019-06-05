@@ -1,10 +1,42 @@
 function varargout = options(opt, varargin)
-% This is a silly way to have global options for all functions in a
-% package. 
-% SYNOPSIS options('set', opt_name1, value1, ..., opt_namen, valuen) sets 
-% the options (opt_name1 to opt_namen) to (value1 to valuen) respectively.
-% options(opt_name) returns the value of the option opt_name
-% currently allowed options are: 'no_nodes': the number of condor nodes to use when running execute.
+% CONDOR.OPTIONS is a method which manages global and persistent options 
+% for the condor package.
+%
+% CONDOR.OPTIONS(option_name) returns the value of option option_name.
+% Valid options are: 'no_nodes': The number of nodes which should be used
+%                                for computations. 
+%                                Default is min([10 condor.free_nodes]).
+%                    'debug':    In debug mode the condor folder is not
+%                                cleaned after successful computations and
+%                                jobs are only submitted if there are not
+%                                already all results from a previous
+%                                computation available. Default is false.
+%                    'username': Username for condor job removal. Default
+%                                is empty char array ''.
+%
+% CONDOR.OPTIONS('set', option_name, option_value) sets the option
+% option_name to option_value. See above for valid option names.
+%
+% CONDOR.OPTIONS('reset') resets all options to default values.
+%
+% EXAMPLES
+%       condor.options('no_nodes') % number of nodes used for computations
+%       condor.options('set', 'no_nodes', 10) % use ten nodes
+%       condor.options('set', 'debug', true)
+%       condor.options('reset')
+%         
+% REMARKS I know, this is a silly way to have global options for all 
+%         functions in a package. I'm not really convinced that this method
+%         is a good idea, shrug.
+%
+% See also CONDOR.EXECUTE, CONDOR.CLEANUP, CONDOR.FREE_NODES
+%
+% created with MATLAB ver.: 9.5.0.944444 (R2018b) on Debian GNU/Linux
+% Version: 9 (stretch)
+%
+% created by: Denis Hessel, d.hessel@wwu.de
+% DATE: 05-June-2019
+
     persistent opts
     
     if(isempty(opts))
@@ -23,6 +55,8 @@ function varargout = options(opt, varargin)
                                  "' is not a valid option."));
                 end
             end
+        case 'reset'
+            opts = [];
         otherwise
             varargout = {opts.(opt)};
     end

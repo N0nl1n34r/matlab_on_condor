@@ -1,5 +1,5 @@
 function result = execute(funfile, parfun, reducefun)
-% EXECUTE(no_jobs, funfile, parfun, reducefun) executes the function
+% CONDOR.EXECUTE(funfile, parfun, reducefun) executes the function
 % specified by funfile on no_jobs condor nodes, where the arguments given 
 % to the ith node is given by the cell array parfun(i) which is spliced
 % into the function. The outputs of all jobs are given as a return value
@@ -13,13 +13,10 @@ function result = execute(funfile, parfun, reducefun)
 %               which is stupid (replace fun(parfun(i)){:} with parms =
 %               parfun(i); fun(parms{:});).
 %           2.) Each of the calls of fun is done on a different node on
-%               condor.
+%               condor. The number of nodes can be set by using
+%               condor.options('set', 'no_nodes', <number>).
 %
-% INPUT no_jobs: The number of condor jobs which will be created. Each job
-%                will execute the same function specified by funfile but
-%                the parameters, with which the function is called, can be
-%                dependent on the job number and are given by parfun.
-%       funfile: String/char array containing the name of a function or
+% INPUT funfile: String/char array containing the name of a function or
 %                path to a file, which contains a function. This function
 %                will be executed on condor. Parameters passed to this
 %                function for the job with number i are given by the return
@@ -33,18 +30,19 @@ function result = execute(funfile, parfun, reducefun)
 % OUTPUT result: Output of reducefun applied to the results of the nodes.
 %
 % EXAMPLES 
-%      execute(100, 'identity', @(job_no) {job_no}, ...
-%                     @(varargin) sum(cellfun(@(x) x, varargin)))
-%      ... is a needlessly complicated way of summing all the integers from
-%      1 to 100 (identity contains a function which returns its argument).
+%      condor.options('set', 'no_nodes', 10);
+%      condor.execute('condor.tasks.identity', ...
+%                     @condor.parfuns.identity, ...
+%                     @(varargin) sum([varargin{:}]))
+%      % ... is a needlessly complicated way of summing all the integers 
+%      % from from 1 to 10.
+% 
+% REMARKS The number of nodes/created jobs can be set by using 
+%         condor.options('set', no_nodes, <number>)
 %
-%      brs = br_split(br, no_jobs);
-%      br = execute(no_jobs, 'br_calculate_stability', @(job_no)
-%      br{job_no}, @brs_join);
-%      ... is a very much needed way to calculate the stability of a branch
-%      in an embarrassingly parallel (this is a technical term!) way.
-%      
-% REMARKS This only works on machines on which condor_submit is a terminal
+%         This function depends on the option 'no_nodes' and 'debug'.
+%         
+%         This only works on machines on which condor_submit is a terminal
 %         command (i.e. machines in the institute).
 %
 %         Dependencies are handled automatically, so if the function
@@ -57,13 +55,16 @@ function result = execute(funfile, parfun, reducefun)
 %         As this function waits until all these result files are created,
 %         you will have to terminate operations by pressing ctrl+c.
 %         If you want to avoid this situation, make sure that your function
-%         handles all its exceptions properly.
+%         handles all its exceptions properly. It is advised to call
+%         condor.cleanup if this should occur.
+%
+% See also CONDOR.EXECUTE.GET_STABILITY, CONDOR.OPTIONS, CONDOR.CLEANUP
 %
 % created with MATLAB ver.: 9.5.0.944444 (R2018b) on Debian GNU/Linux
 % Version: 9 (stretch)
 %
 % created by: Denis Hessel, d.hessel@wwu.de
-% DATE: 15-May-2019
+% DATE: 05-June-2019
 %
     no_jobs = condor.options('no_nodes');
     if(~(condor.options('debug') && ...
@@ -72,7 +73,7 @@ function result = execute(funfile, parfun, reducefun)
         create_job_parameter_files(parfun, no_jobs);
         submit_on_condor(funfile, no_jobs);
 
-        condor.pause_till_files_exist(condor_expected_files(no_jobs));
+        condor.helper.pause_till_files_exist(condor_expected_files(no_jobs));
     end
     results = get_job_results(no_jobs);
     result = reducefun(results{:});

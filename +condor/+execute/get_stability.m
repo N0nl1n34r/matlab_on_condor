@@ -1,4 +1,27 @@
 function [br, nunst] = get_stability(br, psd_nodes, varargin)     
+% CONDOR.EXECUTE.GET_STABILITY(br, psd_nodes, varargin) computes the
+% stability of the branch br with psd_nodes amount of nodes for spectral
+% differencing. Other arguments are passed down to GetStability function of
+% dde biftool. Computation is done on condor with
+% condor.options('no_nodes') number of nodes.
+%
+% INPUT br:        The branch which stability should be computed.
+%       psd_nodes: The number of nodes for the spectral differencing
+%                  method.
+%       varargin:  Arguments which should be passed down to the
+%                  GetStability function of dde biftool.
+%
+% OUTPUT br:       Input branch with stability information added.
+%        nunst:    Array of number of unstable eigenvalues.
+%         
+% REMARKS This functions depends on the option 'no_nodes'.
+%
+% created with MATLAB ver.: 9.5.0.944444 (R2018b) on Debian GNU/Linux
+% Version: 9 (stretch)
+%
+% created by: Denis Hessel, d.hessel@wwu.de
+% DATE: 05-June-2019
+
     % condor.task.get_stability takes br, psd_nodes and returns {br, nunst}
     funfile = 'condor.tasks.get_stability'; 
     
