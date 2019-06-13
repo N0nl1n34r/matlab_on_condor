@@ -3,6 +3,16 @@
 
 load(strcat("parameters_job_no_", num2str(job_no), ".mat"), ...
             'parameters');
-result = fun(parameters{:});
+
+try
+    result = fun(parameters{:});
+    suc = true;
+    errmsg = '';
+catch error
+    result = [];
+    suc = false;
+    errmsg = error.message;
+end
+
 save(strcat("result_job_no_", num2str(job_no), ".mat"), ...
-            'result');
+            'result', 'suc', 'errmsg');

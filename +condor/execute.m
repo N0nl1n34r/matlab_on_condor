@@ -33,7 +33,7 @@ function result = execute(funfile, parfun, reducefun)
 %      condor.options('set', 'no_nodes', 10);
 %      condor.execute('condor.tasks.identity', ...
 %                     @condor.parfuns.identity, ...
-%                     @(varargin) sum([varargin{:}]))
+%                     @condor.reducefuns.sum_all)
 %      % ... is a needlessly complicated way of summing all the integers 
 %      % from from 1 to 10.
 % 
@@ -49,6 +49,8 @@ function result = execute(funfile, parfun, reducefun)
 %         specified by funfile depends on other .m files, they are copied
 %         to the condor node as well (yes, this means libraries are copied 
 %         automatically).
+%         For more information on what is and what isn't copied see:
+%         https://de.mathworks.com/help/matlab/matlab_prog/identify-dependencies.html
 %
 %         If any of the jobs on condor are terminated irregulary, so that
 %         no results_job_no_[[x]].mat file is created, you are out of luck.
@@ -148,10 +150,19 @@ end
 
 function results = get_job_results(no_jobs)
     results = cell(1, no_jobs);
-    for no = 1:no_jobs
-        load(strcat(fileparts(mfilename('fullpath')), '/', ...
-                              "result_job_no_", num2str(no), ".mat"), ...
-             'result');
-        results{no} = result;
+    result_index = 1;
+    for job_no = 1:no_jobs
+        job = load(strcat(fileparts(mfilename('fullpath')), '/', ...
+                          "result_job_no_", num2str(job_no), ".mat"), ...
+                   'result', 'suc', 'errmsg');
+        if job.suc
+            results{result_index} = job.result;
+            result_index = result_index + 1;
+        else
+            warning(['Job number ' num2str(job_no) ' failed.' ...
+                     newline 'Corresponding output will be omitted in the return value.'])
+            warning(job.errmsg);
+        end
     end
+    results = results(1:result_index-1);
 end
