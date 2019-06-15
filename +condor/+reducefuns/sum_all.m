@@ -15,5 +15,5 @@ function total = sum_all(varargin)
 % created by: Denis Hessel, d.hessel@wwu.de
 % DATE: 05-June-2019
 
-	total = sum([varargin{:}];
+	total = sum([varargin{:}]);
 end
