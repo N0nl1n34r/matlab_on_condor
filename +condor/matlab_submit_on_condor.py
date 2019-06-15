@@ -45,37 +45,34 @@ string_arg = "-i " + scriptname + " " + directoryname + " " + func_name
 
 no_jobs = int(sys.argv[1])#175; # number of jobs you want to create
 
-for i in range(no_jobs): # for each job one condor submit file is generated
-    current_outputname = outputname + "_job_no_" + str(i+1) 
-    current_submitfilename = current_outputname + ".sub"
 
-    # transfered files for the ith job are all .m files, tarball starting with "include" (previously defined in transfer_files)
-    # and the file parameter_job_no_i+1.mat
-    current_transfer_files = transfer_files + ", parameters_job_no_" + str(i+1) + ".mat"
-    
-    current_string_arg = string_arg + " " + str(i + 1)
-    #executable is transferred by default
-    current_submittext = """universe      = vanilla
-    Executable    = execute_matlab_script.py
-    arguments     = {0}
-    Log           = {1}.log
-    error         = {1}.err
-    output        = {1}.txt
-    requirements  = ((Machine!="MAXWELL.uni-muenster.de") && (Machine!="THOMSON.uni-muenster.de"))
-    notification  = Never
-    getenv        = true
-    rank          = kflops
-    transfer_input_files    = {2}
-    should_transfer_files   = YES
-    when_to_transfer_output = ON_EXIT_OR_EVICT
-    Queue
-    """.format(current_string_arg, current_outputname, current_transfer_files)
-    #requirements  = ((Machine=="SELDON.uni-muenster.de") && (CPUs>=4))
-    
-    
-    g=open(current_submitfilename,"w")
-    g.write(current_submittext)
-    g.close()
+current_outputname = outputname + "_job_no_$(Process)"
+current_submitfilename = outputname + ".sub"
+current_transfer_files = transfer_files + ", parameters_job_no_$(Process).mat"
 
-    # use subprocess.call to directly submit the condor job
-    subprocess.call("condor_submit "+current_submitfilename, shell=True)
+current_string_arg = string_arg + " $(Process)"
+
+current_submittext = """universe      = vanilla
+Executable    = execute_matlab_script.py
+arguments     = {0}
+Log           = {1}.log
+error         = {1}.err
+output        = {1}.txt
+requirements  = ((Machine!="MAXWELL.uni-muenster.de") && (Machine!="THOMSON.uni-muenster.de"))
+notification  = Never
+getenv        = true
+rank          = kflops
+transfer_input_files    = {2}
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT_OR_EVICT
+Queue {3}
+""".format(current_string_arg, current_outputname, current_transfer_files, no_jobs)
+#requirements  = ((Machine=="SELDON.uni-muenster.de") && (CPUs>=4))
+
+
+g=open(current_submitfilename,"w")
+g.write(current_submittext)
+g.close()
+
+# use subprocess.call to directly submit the condor job
+subprocess.call("condor_submit "+current_submitfilename, shell=True)

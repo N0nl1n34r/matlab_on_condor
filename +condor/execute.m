@@ -121,11 +121,13 @@ function dir_name = parent_dir_name(path_name)
 end
 
 function create_job_parameter_files(parfun, no_jobs)
+    % jobs in matlab start with 1, but due to the condor submit file
+    % parameter files start at 0 -> therefore job_no = i, but file uses i-1
     for i = 1:no_jobs
         job_no = i;
         parameters = parfun(job_no);
         save(strcat(fileparts(mfilename('fullpath')), '/', ...
-                    'parameters_job_no_', num2str(i), '.mat'), ...
+                    'parameters_job_no_', num2str(i-1), '.mat'), ...
              'parameters', 'job_no');
     end
 end
@@ -133,7 +135,7 @@ end
 function submit_on_condor(funfile, no_jobs)
     mdir = fileparts(mfilename('fullpath'));
     [~, funname, funext] = fileparts(funfile); 
-    if(funext ~= ".m")
+    if(funext ~= ".m") % function is in a package
         funname = strcat(funname, funext);
     end
     [~, ~] = system(['cd ''' mdir  ''' && ' ...
@@ -145,13 +147,13 @@ end
 function ef = condor_expected_files(no_jobs)
     ef = arrayfun(@(no) strcat(fileparts(mfilename('fullpath')), '/', ...
                                "result_job_no_", num2str(no), ".mat"), ...
-                  1:no_jobs);
+                  0:(no_jobs-1));
 end
 
 function results = get_job_results(no_jobs)
     results = cell(1, no_jobs);
     result_index = 1;
-    for job_no = 1:no_jobs
+    for job_no = 0:(no_jobs-1)
         job = load(strcat(fileparts(mfilename('fullpath')), '/', ...
                           "result_job_no_", num2str(job_no), ".mat"), ...
                    'result', 'suc', 'errmsg');
