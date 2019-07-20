@@ -152,19 +152,15 @@ end
 
 function results = get_job_results(no_jobs)
     results = cell(1, no_jobs);
-    result_index = 1;
     for job_no = 0:(no_jobs-1)
         job = load(strcat(fileparts(mfilename('fullpath')), '/', ...
                           "result_job_no_", num2str(job_no), ".mat"), ...
                    'result', 'suc', 'errmsg');
-        if job.suc
-            results{result_index} = job.result;
-            result_index = result_index + 1;
-        else
-            warning(['Job number ' num2str(job_no) ' failed.' ...
-                     newline 'Corresponding output will be omitted in the return value.'])
+        results{job_no+1} = job.result;
+        if ~job.suc
+            warning(['Job number ' num2str(job_no+1) ' failed.' ...
+                     newline 'Corresponding output will be an empty double array.'])
             warning(job.errmsg);
         end
     end
-    results = results(1:result_index-1);
 end
