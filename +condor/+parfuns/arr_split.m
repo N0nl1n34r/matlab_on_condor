@@ -1,4 +1,4 @@
-function fun = arr_split(array)
+function fun = arr_split(array, no_splits)
 % CONDOR.PARFUNS.ARR_SPLIT(array) returns a parameter function, which 
 % splits array into condor.options('no_nodes') evenly parts
 %
@@ -25,11 +25,12 @@ function fun = arr_split(array)
 %
 % created by: Denis Hessel, d.hessel@wwu.de
 % DATE: 05-June-2019
-
-    no_jobs = condor.options('no_nodes');
-    split_array = condor.helper.arr_split(array, no_jobs);
+    if ~exist('no_splits', 'var')
+        no_splits = condor.options('no_nodes');
+    end
+    split_array = condor.helper.arr_split(array, no_splits);
     function parms = parfun(job_no)
-        parms = {split_array{job_no}};
+        parms = split_array(job_no);
     end
     fun = @parfun;
 end

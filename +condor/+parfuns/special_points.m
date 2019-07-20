@@ -1,4 +1,4 @@
-function fun = special_points(br, point_indices)
+function fun = special_points(br, point_indices, no_splits)
 % CONDOR.PARFUNS.SPECIAL_POINTS(br, point_indices) returns a parameter
 % function so that the target task gets the branch and an array of
 % point_indices as arguments. Basically point_indices will be split into
@@ -22,9 +22,10 @@ function fun = special_points(br, point_indices)
 %
 % created by: Denis Hessel, d.hessel@wwu.de
 % DATE: 05-June-2019
-
-    no_jobs = condor.options('no_nodes');
-    split_indices = condor.helper.arr_split(point_indices, no_jobs);
+    if ~exist('no_splits', 'var')
+        no_splits = condor.options('no_nodes');
+    end
+    split_indices = condor.helper.arr_split(point_indices, no_splits);
     function parms = parfun(job_no)
         parms = {br, split_indices{job_no}};
     end

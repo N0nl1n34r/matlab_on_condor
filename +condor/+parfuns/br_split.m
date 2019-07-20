@@ -1,4 +1,4 @@
-function fun = br_split(br)
+function fun = br_split(br, no_splits)
 % CONDOR.PARFUNS.BR_SPLIT(br) returns a parameter function, which splits a 
 % biftool branch into condor.options('no_nodes') evenly parts by splitting 
 % the array of points.
@@ -27,10 +27,12 @@ function fun = br_split(br)
 %
 % created by: Denis Hessel, d.hessel@wwu.de
 % DATE: 05-June-2019
-    no_jobs = condor.options('no_nodes');
-	brs = condor.helper.br_split(br, no_jobs);
+    if ~exist('no_splits', 'var')
+        no_splits = condor.options('no_nodes');
+    end
+    brs = condor.helper.br_split(br, no_splits);
     function parm = parfun(job_no)
-        parm = {brs{job_no}};
+        parm = brs(job_no);
     end
 	fun = @parfun;
 end
