@@ -42,7 +42,8 @@ function varargout = options(opt, varargin)
     if(isempty(opts))
         opts = struct('no_nodes', min([100 floor(condor.free_nodes/3)]), ...
                       'username', 'd_hess06', ...
-                      'debug', false);
+                      'debug', false, ...
+                      'monitor_function', @(varargin) disp("Still waiting for condor..."));
     end
     
     switch opt
