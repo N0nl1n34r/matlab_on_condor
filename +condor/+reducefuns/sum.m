@@ -14,8 +14,8 @@ function reducefun = sum(varargin)
 %
 % created by: Denis Hessel, d.hessel@wwu.de
 % DATE: 05-June-2019
-    function total = reducefun(varargin)
+    function total = sum_inputs(varargin)
         total = sum([varargin{:}]);
     end
-    reducefun = @reducefun;
+    reducefun = @sum_inputs;
 end

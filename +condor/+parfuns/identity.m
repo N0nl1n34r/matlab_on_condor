@@ -13,7 +13,7 @@ function parfun = identity()
 %
 % created by: Denis Hessel, d.hessel@wwu.de
 % DATE: 05-June-2019
-    function results = identity(job_no)
+    function result = identity(job_no)
         result = {job_no};
     end
     parfun = @identity; 
