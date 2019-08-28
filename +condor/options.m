@@ -26,8 +26,9 @@ function varargout = options(opt, varargin)
 %       condor.options('reset')
 %         
 % REMARKS I know, this is a silly way to have global options for all 
-%         functions in a package. I'm not really convinced that this method
-%         is a good idea, shrug.
+%         functions in a package. If you have a better idea, which does not
+%         include passing a option struct for every function call, don't
+%         hesitate to contact me (see below).
 %
 % See also CONDOR.EXECUTE, CONDOR.CLEANUP, CONDOR.FREE_NODES
 %

@@ -8,7 +8,13 @@ function fun = unpack(x)
 % OUTPUT parfun: A parameter function which returns x (not in a cell!) 
 %                independent of job number. The result is that the contents
 %                of x will be sliced into the target task.
-%       
+% 
+% EXAMPLES
+%        reducefun = condor.reducefuns.unpack({'option_a', 1, ...
+%                                              'option_b', 2});
+%        reducefun(42)
+%        % ... should return {'option_a', 1, 'option_b', 2}
+%
 % REMARKS This function is used in this package with
 %         CONDORS.PARFUNS.COMBINED to pass varargin to a task.
 %

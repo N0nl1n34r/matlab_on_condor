@@ -5,6 +5,7 @@ function fun = special_points(br, point_indices, no_splits)
 % condor.options('no_node') parts and each task gets the branch and a part
 % of the point_indices.
 %
+% 
 % INPUT br:            A branch.
 %       point_indices: An array of point indices which should be split.
 %

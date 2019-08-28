@@ -5,6 +5,8 @@ function br = brs_join(varargin)
 %
 % OUTPUT br: The joined branch
 %
+% REMARKS This function is meant to be used with with DDE-BIFTOOL.
+%
 % created with MATLAB ver.: 9.5.0.944444 (R2018b) on Debian GNU/Linux
 % Version: 9 (stretch)
 %

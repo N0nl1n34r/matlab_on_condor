@@ -32,8 +32,8 @@ function result = execute(funfile, parfun, reducefun)
 % EXAMPLES 
 %      condor.options('set', 'no_nodes', 10);
 %      condor.execute('condor.tasks.identity', ...
-%                     @condor.parfuns.identity, ...
-%                     @condor.reducefuns.sum_all)
+%                     condor.parfuns.identity, ...
+%                     condor.reducefuns.sum)
 %      % ... is a needlessly complicated way of summing all the integers 
 %      % from from 1 to 10.
 % 

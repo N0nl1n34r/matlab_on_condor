@@ -9,8 +9,8 @@ function fun = constant(c)
 %
 % EXAMPLES 
 %          constant_parfun = condor.parfuns.constant(42);
-%          constant_parfun(17);
-%          %... should return 17
+%          constant_parfun(17)
+%          %... should return {42}
 %
 % REMARKS The constant c can be of any type.
 %

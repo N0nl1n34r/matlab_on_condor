@@ -24,9 +24,8 @@ function fun = cell_index_apply(cell_index, apply_fun)
 %                         @(varargin) strcat(varargin{:}));
 %        reducefun({"Mathematica ", "Matlab "}, {"rules", "sucks"})
 %        % ... should return the truth.
-% REMARKS 
 %
-% See also
+% See also CONDOR.REDUCEFUNS.CELL_APPLY, CONDOR.REDUCEFUNS.COMBINED
 %
 % created with MATLAB ver.: 9.5.0.944444 (R2018b) on Debian GNU/Linux
 % Version: 9 (stretch)

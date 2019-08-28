@@ -25,9 +25,10 @@ function free_nodes = free_nodes()
     [exit_code, command_output] = system('condor_status -total');
     if(exit_code == 0)
         command_output = strsplit(command_output);
-        % I know, this is horrible...
+        % I know, this is horrible... I'm welcome for improvements (see
+        % above for my email).
         free_nodes = str2num(command_output{end-4});
-    else
+    else % condor_status is most likely not a command forward error to matlab
         error(command_output);
     end
 end

@@ -1,9 +1,10 @@
-function varargin = identity(varargin)
-% CONDOR.REDUCEFUNS.IDENTITY(varargin) returns its input arguments
-% unchanged.
-% INPUT varargin: Arguments which should be returned unchanged
+function reducefun = identity()
+% CONDOR.REDUCEFUNS.IDENTITY() returns a reduce function which returns its 
+% input arguments unchanged.
+% INPUT none
 %
-% OUTPUT varargin: The unchanged input arguments
+% OUTPUT reducefun: A reduce function which returns its input arguments as
+%                   output arguments.
 %
 % EXAMPLES 
 %        condor.reducefuns.identity(1,2,3)
@@ -14,5 +15,7 @@ function varargin = identity(varargin)
 %
 % created by: Denis Hessel, d.hessel@wwu.de
 % DATE: 05-June-2019
-
+    function varargin = identity(varargin)
+    end
+    reducefun = @identity;
 end

@@ -15,6 +15,8 @@ function result = get_stability(br, psd_nodes, varargin)
 % REMARKS  This function is not to be intended to be used by a user.
 %          Instead use CONDOR.EXECUTE.GET_STABILITY to compute the
 %          stability of a branch on condor.
+%
+%          This function depends on DDE-Biftool.
 %       
 % See also CONDOR.EXECUTE.GET_STABILITY
 %
