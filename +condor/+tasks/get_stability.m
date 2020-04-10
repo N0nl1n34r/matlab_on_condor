@@ -1,10 +1,9 @@
-function result = get_stability(br, psd_nodes, varargin)
-% CONDOR.TASKS.GET_STABILITY(br, psd_nodes, varargin) computes the
+function result = get_stability(br, varargin)
+% CONDOR.TASKS.GET_STABILITY(br, varargin) computes the
 % stability of a br on a condor node.
 %
 %
 % INPUT br:        The branch of which the stability should be computed.
-%       psd_nodes: The number of nodes for spectral differencing
 %       varargin:  Other arguments to pass down to GetStability from dde
 %                  biftool
 %
@@ -26,8 +25,6 @@ function result = get_stability(br, psd_nodes, varargin)
 % created by: Denis Hessel, d.hessel@wwu.de
 % DATE: 05-June-2019
 
-    br.method.stability.psd_nodes = psd_nodes;
-    [nunst,~,~,br.point]=GetStability(br,...
-            'funcs', sys_func, 'stabilityfield', 'l1', varargin{:});
+    [nunst,~,~,br.point]=GetStability(br, varargin{:});
     result = {br, nunst};
 end

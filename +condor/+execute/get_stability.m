@@ -1,13 +1,10 @@
-function [br, nunst] = get_stability(br, psd_nodes, varargin)     
-% CONDOR.EXECUTE.GET_STABILITY(br, psd_nodes, varargin) computes the
-% stability of the branch br with psd_nodes amount of nodes for spectral
-% differencing. Other arguments are passed down to GetStability function of
-% dde biftool. Computation is done on condor with
+function [br, nunst] = get_stability(br, varargin)     
+% CONDOR.EXECUTE.GET_STABILITY(br, varargin) computes the
+% stability of the branch br. Other arguments are passed down to GetStability 
+% function of dde biftool. Computation is done on condor with
 % condor.options('no_nodes') number of nodes.
 %
 % INPUT br:        The branch which stability should be computed.
-%       psd_nodes: The number of nodes for the spectral differencing
-%                  method.
 %       varargin:  Arguments which should be passed down to the
 %                  GetStability function of dde biftool.
 %
@@ -30,7 +27,6 @@ function [br, nunst] = get_stability(br, psd_nodes, varargin)
     % just returns its argument (so that cell arrays will be unpacked)
     % combined joins all returned cell arrays of the parfuns
     parfun = condor.parfuns.combined(condor.parfuns.br_split(br), ...
-                                     condor.parfuns.constant(psd_nodes),...
                                      condor.parfuns.unpack(varargin));
                                  
     % cell_apply applies brs_join to all returned brs and
