@@ -1,6 +1,6 @@
 # `matlab_on_condor`
 
-This repository provides Matlab source code to run embarrassingly parallel problems on a HTCondor system.
+This repository provides Matlab source code to run [embarrassingly parallel](https://en.wikipedia.org/wiki/Embarrassingly_parallel) problems on a HTCondor system.
 
 ## Installing
 
