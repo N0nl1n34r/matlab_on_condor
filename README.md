@@ -12,7 +12,7 @@ This repository provides Matlab source code to run embarassingly parallel proble
 
 ```
 condor.options('set', 'no_nodes', 10);  
-condor.execute(@condor.tasks.identity, ...  
+condor.execute('condor.tasks.identity', ...  
                condor.parfuns.identity, ...  
                condor.reducefuns.sum)
 ```
@@ -41,7 +41,7 @@ There are helper functions available for the construction of parameter and reduc
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
